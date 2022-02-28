@@ -54,7 +54,7 @@ def predict_rub_salary_for_hh(vacancy):
             salary_from=salary['from'],
             salary_to=salary['to'],
         )
-    if salary['from'] and not salary['to']:
+    elif salary['from'] and not salary['to']:
         return salary['from'] * 1.2
     return salary['to'] * 0.8
 
