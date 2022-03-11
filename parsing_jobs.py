@@ -42,13 +42,13 @@ def get_hh_vacancies_by_language(language, page=1):
 
 
 def predict_rub_salary(currency, salary_from, salary_to):
-    if not salary_from and not salary_to:
-        return None
-    elif salary_from and salary_to:
+    if salary_from and salary_to:
         return (salary_from + salary_to) / 2
-    elif salary_from and not salary_to:
+    elif salary_from:
         return salary_from * 1.2
-    return salary_to * 0.8
+    elif salary_to:
+        return salary_to * 0.8
+    return None
 
 
 def parse_language_statistics_hh(language):
@@ -62,16 +62,16 @@ def parse_language_statistics_hh(language):
             language=language,
             page=vacancy_page,
         )
-        if vacancies_in_page['found'] == 0:
+        if not vacancies_in_page['found']:
             language_stat[language]['vacancies_processed'] = 0
             language_stat[language]['average_salary'] = 0
             return language_stat
         for vacancy in vacancies_in_page['items']:
             if not vacancy['salary'] or vacancy['salary']['currency'] != 'RUR':
                 continue
-            salary_currency = vacancy['salary'].get('currency', None)
-            salary_from = vacancy['salary'].get('from', None)
-            salary_to = vacancy['salary'].get('to', None)
+            salary_currency = vacancy['salary'].get('currency')
+            salary_from = vacancy['salary'].get('from')
+            salary_to = vacancy['salary'].get('to')
             avg_salary = predict_rub_salary(
                 currency=salary_currency,
                 salary_from=salary_from,
@@ -172,7 +172,7 @@ def main():
     superjob_token = os.environ.get('SUPERJOB_TOKEN')
     hh_languages_statistics = {}
     superjob_languages_statistics = {}
-    for language in LANGUAGES:
+    for language in LANGUAGES[:2]:
         language_stat_hh = parse_language_statistics_hh(language=language)
         language_stat_superjob = parse_language_staistics_superjob(
             language=language,
