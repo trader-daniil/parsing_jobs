@@ -48,7 +48,6 @@ def predict_rub_salary(currency, salary_from, salary_to):
         return salary_from * 1.2
     elif salary_to:
         return salary_to * 0.8
-    return None
 
 
 def parse_language_statistics_hh(language):
